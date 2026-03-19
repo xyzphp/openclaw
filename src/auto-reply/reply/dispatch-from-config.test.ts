@@ -2703,4 +2703,32 @@ describe("dispatchReplyFromConfig", () => {
     expect(hookMocks.runner.runBeforeMessageProcess).not.toHaveBeenCalled();
     expect(replyResolver).toHaveBeenCalledTimes(1);
   });
+
+  it("runs before_message_process hook even when sendPolicy is deny", async () => {
+    setNoAbort();
+    hookMocks.runner.hasHooks.mockImplementation(
+      ((hookName?: string) => hookName === "before_message_process") as () => boolean,
+    );
+    hookMocks.runner.runBeforeMessageProcess.mockResolvedValue({
+      handled: true,
+      reason: "forwarded to CRM",
+    });
+    const cfg = {
+      session: { sendPolicy: { default: "deny" } },
+    } as OpenClawConfig;
+    const dispatcher = createDispatcher();
+    const ctx = buildTestCtx({
+      Provider: "telegram",
+      Body: "Hello",
+      BodyForCommands: "Hello",
+    });
+    const replyResolver = vi.fn(async () => ({ text: "ai reply" }) as ReplyPayload);
+
+    const result = await dispatchReplyFromConfig({ ctx, cfg, dispatcher, replyResolver });
+
+    expect(hookMocks.runner.runBeforeMessageProcess).toHaveBeenCalledTimes(1);
+    expect(replyResolver).not.toHaveBeenCalled();
+    expect(dispatcher.sendFinalReply).not.toHaveBeenCalled();
+    expect(result).toEqual({ queuedFinal: false, counts: { tool: 0, block: 0, final: 0 } });
+  });
 });

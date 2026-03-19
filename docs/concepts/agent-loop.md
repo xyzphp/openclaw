@@ -89,7 +89,7 @@ These run inside the agent loop or gateway pipeline:
 - **`before_tool_call` / `after_tool_call`**: intercept tool params/results.
 - **`tool_result_persist`**: synchronously transform tool results before they are written to the session transcript.
 - **`message_received`**: fires when a message arrives before it is dispatched to the agent. Observe or enrich inbound data.
-- **`before_message_process`**: fires after routing but before the AI agent runs. Return `{ handled: true }` to intercept the message and skip AI processing entirely (first-claim-wins across registered plugins). When intercepted, the message is silently dropped with no automatic reply — the plugin is responsible for any response to the sender. Note: this hook does not fire for ACP-dispatched messages, which follow their own session lifecycle.
+- **`before_message_process`**: fires after routing and abort checks but **before** send-policy gating and ACP dispatch, so plugins can intercept or forward messages even when the AI agent is disabled (e.g. `/send off`). Return `{ handled: true }` to stop all further processing (first-claim-wins across registered plugins). When intercepted, no automatic reply is sent — the plugin is responsible for any response to the sender.
 - **`message_sending` / `message_sent`**: outbound message hooks.
 - **`session_start` / `session_end`**: session lifecycle boundaries.
 - **`gateway_start` / `gateway_stop`**: gateway lifecycle events.
