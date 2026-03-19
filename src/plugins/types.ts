@@ -1687,8 +1687,6 @@ export type PluginHookBeforeMessageProcessEvent = {
   isGroup: boolean;
   /** Provider message ID */
   messageId?: string;
-  /** Additional provider-specific metadata */
-  metadata?: Record<string, unknown>;
 };
 
 export type PluginHookBeforeMessageProcessResult = {
