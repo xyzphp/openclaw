@@ -502,6 +502,34 @@ export async function dispatchReplyFromConfig(params: {
       return acpDispatch;
     }
 
+    // Run before_message_process hook — lets plugins intercept messages before the AI agent.
+    // The first handler returning { handled: true } short-circuits all subsequent processing.
+    if (hookRunner?.hasHooks("before_message_process")) {
+      const interceptResult = await hookRunner.runBeforeMessageProcess(
+        {
+          from: hookContext.from,
+          content: hookContext.content,
+          body: hookContext.body,
+          bodyForAgent: hookContext.bodyForAgent,
+          transcript: hookContext.transcript,
+          timestamp: hookContext.timestamp,
+          senderId: hookContext.senderId,
+          senderName: hookContext.senderName,
+          isGroup: hookContext.isGroup,
+          messageId: hookContext.messageId,
+        },
+        toPluginMessageContext(hookContext),
+      );
+      if (interceptResult?.handled) {
+        logVerbose(
+          `dispatch-from-config: message intercepted by before_message_process hook${interceptResult.reason ? `: ${interceptResult.reason}` : ""}`,
+        );
+        recordProcessed("completed", { reason: "before_message_process_handled" });
+        markIdle("message_completed");
+        return { queuedFinal: false, counts: dispatcher.getQueuedCounts() };
+      }
+    }
+
     // Track accumulated block text for TTS generation after streaming completes.
     // When block streaming succeeds, there's no final reply, so we need to generate
     // TTS audio separately from the accumulated block content.
