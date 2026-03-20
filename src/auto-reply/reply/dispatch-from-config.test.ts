@@ -1,7 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { OpenClawConfig } from "../../config/config.js";
 import type { SessionBindingRecord } from "../../infra/outbound/session-binding-service.js";
-import type { PluginTargetedInboundClaimOutcome } from "../../plugins/hooks.js";
+import type {
+  PluginHookBeforeMessageProcessResult,
+  PluginTargetedInboundClaimOutcome,
+} from "../../plugins/hooks.js";
 import { setActivePluginRegistry } from "../../plugins/runtime.js";
 import {
   createChannelTestPluginBase,
@@ -42,7 +45,9 @@ const hookMocks = vi.hoisted(() => ({
       async () => ({ status: "no_handler" as const }),
     ),
     runMessageReceived: vi.fn(async () => {}),
-    runBeforeMessageProcess: vi.fn(async () => undefined),
+    runBeforeMessageProcess: vi.fn<() => Promise<PluginHookBeforeMessageProcessResult | undefined>>(
+      async () => undefined,
+    ),
   },
 }));
 const internalHookMocks = vi.hoisted(() => ({
