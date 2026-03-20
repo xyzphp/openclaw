@@ -23,9 +23,7 @@ describe("before_message_process hook runner", () => {
 
   it("returns handled:true from first handler that intercepts", async () => {
     const handler = vi.fn().mockResolvedValue({ handled: true, reason: "kefu intercept" });
-    const registry = createMockPluginRegistry([
-      { hookName: "before_message_process", handler },
-    ]);
+    const registry = createMockPluginRegistry([{ hookName: "before_message_process", handler }]);
     const runner = createHookRunner(registry);
 
     const result = await runner.runBeforeMessageProcess(
@@ -42,9 +40,7 @@ describe("before_message_process hook runner", () => {
 
   it("returns undefined when handler returns handled:false", async () => {
     const handler = vi.fn().mockResolvedValue({ handled: false });
-    const registry = createMockPluginRegistry([
-      { hookName: "before_message_process", handler },
-    ]);
+    const registry = createMockPluginRegistry([{ hookName: "before_message_process", handler }]);
     const runner = createHookRunner(registry);
 
     const result = await runner.runBeforeMessageProcess(
@@ -57,9 +53,7 @@ describe("before_message_process hook runner", () => {
 
   it("returns undefined when handler returns void", async () => {
     const handler = vi.fn().mockResolvedValue(undefined);
-    const registry = createMockPluginRegistry([
-      { hookName: "before_message_process", handler },
-    ]);
+    const registry = createMockPluginRegistry([{ hookName: "before_message_process", handler }]);
     const runner = createHookRunner(registry);
 
     const result = await runner.runBeforeMessageProcess(
@@ -110,9 +104,7 @@ describe("before_message_process hook runner", () => {
 
   it("passes all event fields to handler", async () => {
     const handler = vi.fn().mockResolvedValue(undefined);
-    const registry = createMockPluginRegistry([
-      { hookName: "before_message_process", handler },
-    ]);
+    const registry = createMockPluginRegistry([{ hookName: "before_message_process", handler }]);
     const runner = createHookRunner(registry);
 
     await runner.runBeforeMessageProcess(
