@@ -1691,7 +1691,7 @@ export type PluginHookBeforeMessageProcessEvent = {
 
 export type PluginHookBeforeMessageProcessResult = {
   /** Set to true to intercept the message — AI agent will not process it */
-  handled: boolean;
+  handled: true;
   /** Optional description logged when the message is intercepted */
   reason?: string;
 };

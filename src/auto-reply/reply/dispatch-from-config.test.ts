@@ -2625,12 +2625,12 @@ describe("dispatchReplyFromConfig", () => {
     );
   });
 
-  it("calls AI agent when before_message_process hook returns handled:false", async () => {
+  it("calls AI agent when before_message_process hook returns undefined", async () => {
     setNoAbort();
     hookMocks.runner.hasHooks.mockImplementation(
       ((hookName?: string) => hookName === "before_message_process") as () => boolean,
     );
-    hookMocks.runner.runBeforeMessageProcess.mockResolvedValue({ handled: false });
+    hookMocks.runner.runBeforeMessageProcess.mockResolvedValue(undefined);
     const cfg = emptyConfig;
     const dispatcher = createDispatcher();
     const ctx = buildTestCtx({
